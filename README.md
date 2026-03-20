@@ -1,5 +1,39 @@
 #  Как работать с репозиторием финального задания
 
+## Структура репозитория (корень `kittygram-final`)
+
+```
+kittygram-final
+├── .env.example
+├── README.md
+├── .github
+│   └── workflows
+│       └── main.yml
+├── backend
+│   ├── README.md
+│   ├── cats
+│   ├── kittygram_backend
+│   ├── manage.py
+│   └── requirements.txt
+├── docker-compose.production.yml
+├── frontend
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   └── src
+├── kittygram_workflow.yml
+├── nginx
+│   ├── Dockerfile
+│   └── nginx.conf
+├── pytest.ini
+├── tests.yml
+└── tests
+```
+
+Дополнительно в этом проекте: `docker-compose.yml` (локальная разработка), `.gitignore`, `.flake8`.
+
 ## Что нужно сделать
 
 Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
@@ -21,4 +55,4 @@ dockerhub_username: ваш_логин_на_докерхабе
 
 - Проект Kittygram доступен по ссылке, указанной в `tests.yml`.
 - Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`. .
+- В корне проекта есть файл `kittygram_workflow.yml`.

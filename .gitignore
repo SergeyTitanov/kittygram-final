@@ -1,0 +1,24 @@
+# Система и IDE (не коммитить)
+.DS_Store
+**/.DS_Store
+.cursor/
+.idea/
+.vscode/
+
+# Секреты и локальная конфигурация
+.env
+.env.local
+.env.*.local
+# если используете шаблон .env*, не игнорируйте пример:
+!.env.example
+
+__pycache__/
+*.py[cod]
+*.sqlite3
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
