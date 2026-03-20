@@ -7,7 +7,16 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-cg6*%6d51ef8f#4!r3*$vmxm4)
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+# Пустая строка в .env (ALLOWED_HOSTS=) даёт os.getenv == '', а не default '*',
+# тогда Django отдаёт HTML DisallowedHost вместо JSON API — падает test_kittygram_api_available.
+def _parse_allowed_hosts():
+    raw = os.getenv('ALLOWED_HOSTS', '*')
+    if raw is None or not str(raw).strip():
+        return ['*']
+    return [h.strip() for h in str(raw).split(',') if h.strip()]
+
+
+ALLOWED_HOSTS = _parse_allowed_hosts()
 
 INSTALLED_APPS = [
     'django.contrib.admin',
