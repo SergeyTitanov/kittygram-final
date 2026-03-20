@@ -1,0 +1,3 @@
+repo_owner: YOUR_GITHUB_USERNAME
+kittygram_domain: http://127.0.0.1:9000
+dockerhub_username: YOUR_DOCKERHUB_USERNAME

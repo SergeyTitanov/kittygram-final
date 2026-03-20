@@ -1,0 +1,46 @@
+version: '3.8'
+
+volumes:
+  static:
+  media:
+  pg_data:
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    env_file: .env
+
+  backend:
+    image: ${DOCKERHUB_USERNAME}/kittygram_backend:latest
+    container_name: backend
+    restart: always
+    volumes:
+      - static:/app/staticfiles
+      - media:/app/media
+    env_file: .env
+    depends_on:
+      - postgres
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/kittygram_frontend:latest
+    container_name: frontend
+    volumes:
+      - static:/app/staticfiles
+    command: sh -c "cp -r /app/build/. /app/staticfiles/ && tail -f /dev/null"
+    depends_on:
+      - backend
+
+  gateway:
+    image: ${DOCKERHUB_USERNAME}/kittygram_gateway:latest
+    container_name: gateway
+    volumes:
+      - static:/static_collected
+      - media:/media
+    ports:
+      - "9000:80"
+    depends_on:
+      - backend
+      - frontend
