@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-#
+
 jobs:
   tests:
     name: tests
@@ -121,25 +121,12 @@ jobs:
       - name: Wait for deploy to settle
         run: sleep 45
 
-      # Без этого секрета в tests.yml попадёт пустая строка, pytest упадёт на link.startswith('http').
-      - name: Require KITTYGRAM_DOMAIN secret
-        env:
-          KITTYGRAM_DOMAIN: ${{ secrets.KITTYGRAM_DOMAIN }}
-        run: |
-          if [ -z "${KITTYGRAM_DOMAIN}" ]; then
-            echo "::error::Секрет KITTYGRAM_DOMAIN пустой или не добавлен в Environment project_env. Добавьте: Settings → Environments → project_env → Environment secrets → KITTYGRAM_DOMAIN = http://<внешний_IP_ВМ>:9000"
-            exit 1
-          fi
-          if ! echo "${KITTYGRAM_DOMAIN}" | grep -q '^http'; then
-            echo "::error::KITTYGRAM_DOMAIN должен начинаться с http (например http://51.250.1.2:9000)"
-            exit 1
-          fi
-
       - name: Prepare tests.yml (KITTYGRAM_DOMAIN from secrets)
         run: |
           echo "repo_owner: ${{ github.repository_owner }}" > tests.yml
           echo "kittygram_domain: ${{ secrets.KITTYGRAM_DOMAIN }}" >> tests.yml
           echo "dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}" >> tests.yml
+          cat tests.yml
 
       - name: Pytest (connection + Docker Hub)
         env:
