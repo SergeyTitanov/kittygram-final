@@ -1,5 +1,5 @@
-# Локальный пример для pytest; для ревью подставьте свои значения.
-# Учётные данные админки в репозитории не хранятся — см. README (createsuperuser).
+# Локальный пример; для ревью подставьте свои значения (строки с # игнорируются тестами).
+# Админка: пользователя создаётте через createsuperuser — см. README.
 repo_owner: SergeyTitanov
 kittygram_domain: http://158.160.219.59:9000
 dockerhub_username: sergeytitanov

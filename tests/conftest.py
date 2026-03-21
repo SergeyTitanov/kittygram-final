@@ -87,7 +87,8 @@ def deploy_info_file_content(
         file_content = {}
         line_pattern = re.compile(r'[\w_]+: ?[^;]+')
         for line_num, line in enumerate(f.readlines(), 1):
-            if not line.strip():
+            stripped = line.strip()
+            if not stripped or stripped.startswith('#'):
                 continue
             assert line_pattern.match(line), (
                 f'Убедитесь, что строка номер {line_num} файла '
