@@ -34,6 +34,18 @@ kittygram-final
 
 Дополнительно в этом проекте: `docker-compose.yml` (локальная разработка), `.gitignore`, `.flake8`.
 
+## Django-админка
+
+**Встроенного логина/пароля в репозитории нет** — пользователя с правами администратора нужно создать на сервере (или локально в Docker):
+
+```bash
+docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
+```
+
+Дальше вход: `http://<ваш_IP>:<порт>/admin/` с указанными при создании логином и паролем.
+
+Если статика админки (CSS) не подгружалась, проверьте, что после деплоя выполнялись `collectstatic` и перезапуск gateway (см. workflow `deploy`).
+
 ## Что нужно сделать
 
 Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions

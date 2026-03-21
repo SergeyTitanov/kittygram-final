@@ -7,16 +7,20 @@ on:
 
 jobs:
   tests:
-    name: tests
+    name: tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     environment: project_env
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11']
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install backend dependencies
         run: |
@@ -32,6 +36,7 @@ jobs:
         run: pytest tests/test_files.py
 
       - name: Set up Node
+        if: matrix.python-version == '3.10'
         uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -39,6 +44,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Frontend tests
+        if: matrix.python-version == '3.10'
         working-directory: frontend
         run: |
           npm ci
@@ -99,19 +105,28 @@ jobs:
             cd ~/kittygram
             docker compose -f docker-compose.production.yml pull
             docker compose -f docker-compose.production.yml up -d --remove-orphans
+            docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py migrate --noinput
+            docker compose -f docker-compose.production.yml exec -T backend \
+              python manage.py collectstatic --noinput
+            docker compose -f docker-compose.production.yml restart gateway
 
   auto_test:
-    name: auto_test
+    name: auto_test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: deploy
     environment: project_env
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11']
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install backend dependencies
         run: |
@@ -140,7 +155,13 @@ jobs:
     environment: project_env
     steps:
       - name: Send Telegram notification
-        run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="Kittygram: пайплайн успешно завершён (tests → Docker Hub → deploy → auto_test) ✅"
+        uses: appleboy/telegram-action@v1.0.1
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          disable_web_page_preview: true
+          message: |
+            Kittygram: CI/CD успешно завершён (tests → Docker Hub → deploy → auto_test) ✅
+            Автор пуша: ${{ github.actor }}
+            Коммит: ${{ github.event.head_commit.message }}
+            Ссылка: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
