@@ -5,9 +5,10 @@ from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-if not SECRET_KEY:
-    SECRET_KEY = get_random_secret_key()
+# Вторым аргументом нельзя передать get_random_secret_key() — в Python он
+# вычисляется до вызова getenv при каждом импорте. Пустая строка как дефолт
+# и `or` дают тот же эффект: ключ из .env или случайный.
+SECRET_KEY = os.getenv('SECRET_KEY', '') or get_random_secret_key()
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
